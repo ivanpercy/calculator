@@ -1,10 +1,160 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="">
+    <meta name="description" content="">
+    <meta name="author" content="s">
+    <meta name="generator" content="Jekyll v3.8.5">
     <title>Calculadora</title>
-</head>
-<body>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
 
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container" id="app">
+    <div class="py-5 text-center">
+        <img class="d-block mx-auto mb-4" src="https://getbootstrap.com/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+        <h2>Calculadora de Interés</h2>
+        <p class="lead">
+            Ingrese los datos para emular los intereses generados.
+        </p>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row" style="margin-bottom: 30px">
+                <div class="col-md-4 mb-3">
+                    <label>Monto Inicial</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">S/</span>
+                        </div>
+                        <input type="number" class="form-control" v-model="amount_initial">
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Interés Anual</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" v-model="interest">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Años</label>
+                    <input type="number" class="form-control" v-model="years">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Aporte regular</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">S/</span>
+                        </div>
+                        <input type="number" class="form-control" v-model="amount_regular">
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Periodos</label>
+                    <select class="custom-select d-block w-100" v-model="period">
+                        <option v-for="option in periods" :value="option.value">
+                            {{ option.text }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label>Compuesto</label>
+                    <select class="custom-select d-block w-100" v-model="compound">
+                        <option v-for="option in compounds" :value="option.value">
+                            {{ option.text }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="mb-4">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>{{ calculatePeriods }}</td>
+                    <td>{{ calculateAmountRegular }}</td>
+                    <td>@mdo</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            amount_initial: 1000,
+            amount_regular: 100,
+            interest: 10,
+            years: 1,
+            period: 1,
+            periods: [
+                { text: 'Mensual', value: 1 },
+                { text: 'Trimestral', value: 3 },
+                { text: 'Anual', value: 12 }
+            ],
+            compound: 360,
+            compounds: [
+                { text: 'Diario', value: 1 },
+                { text: 'Mensual', value: 30 },
+                { text: 'Anual', value: 360 }
+            ]
+        },
+        computed: {
+            calculatePeriods: function () {
+                return 12 / this.period;
+            },
+            calculateAmountRegular: function () {
+                return (this.calculatePeriods * this.amount_regular) * this.years;
+            }
+        }
+    })
+</script>
 </body>
 </html>
