@@ -27,6 +27,32 @@
                 font-size: 3.5rem;
             }
         }
+
+        .form1{
+            width:18px;
+            height:18px;
+            background:rgba(255, 99, 132, 0.2);
+            font-family:arial;
+            font-weight:bold;
+            color:#EEEEEE;
+        }
+        .form2{
+            width:18px;
+            height:18px;
+            background:rgba(54, 162, 235, 0.2);
+            font-family:arial;
+            font-weight:bold;
+            color:#EEEEEE;
+        }
+        .form3{
+            width:18px;
+            height:18px;
+            background:rgba(255, 206, 86, 0.2);
+            font-family:arial;
+            font-weight:bold;
+            color:#EEEEEE;
+        }
+
     </style>
 </head>
 <body class="bg-light">
@@ -64,7 +90,7 @@
                     <input type="number" class="form-control" v-model="years">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label>Aporte regular</label>
+                    <label>Monto de aporte</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">S/</span>
@@ -73,22 +99,50 @@
                     </div>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label>Periodos</label>
+                    <label>Periodos de aporte</label>
                     <select class="custom-select d-block w-100" v-model="period">
                         <option v-for="option in periods" :value="option.value">
                             {{ option.text }}
                         </option>
                     </select>
                 </div>
-                <div class="col-md-4 mb-3">
+                <!--<div class="col-md-4 mb-3">
                     <label>Compuesto</label>
                     <select class="custom-select d-block w-100" v-model="compound">
                         <option v-for="option in compounds" :value="option.value">
                             {{ option.text }}
                         </option>
                     </select>
-                </div>
+                </div>-->
             </div>
+            <button class="btn btn-primary btn-lg btn-block" type="button" @click="firstStep()">
+                Calcular intereses
+            </button>
+        </div>
+    </div>
+    <hr class="mb-4">
+    <div class="row">
+        <div class="col-md-4">
+            <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
+        <div class="col-md-8">
+            <table>
+                <tr>
+                    <td style="width: 40px"><div class="form1"></div></td>
+                    <td style="width: 200px">Monto aportado</td>
+                    <td>S/ {{ parseInt(summary.total_amount).toFixed(2) }}</td>
+                </tr>
+                <tr>
+                    <td><div class="form2"></div></td>
+                    <td>Interés ganado</td>
+                    <td>S/ {{ parseInt(summary.total_interest).toFixed(2) }}</td>
+                </tr>
+                <tr>
+                    <td><div class="form3"></div></td>
+                    <td>Total percibido</td>
+                    <td>S/ {{ parseInt(summary.total_contribution).toFixed(2) }}</td>
+                </tr>
+            </table>
         </div>
     </div>
     <hr class="mb-4">
@@ -97,61 +151,156 @@
             <table class="table">
                 <thead class="thead-dark">
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
+                    <th scope="col">N°</th>
+                    <th scope="col">Aporte</th>
+                    <th scope="col">Interés</th>
+                    <th scope="col">Total</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>{{ calculatePeriods }}</td>
-                    <td>{{ calculateAmountRegular }}</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
+                <tr v-for="(item, index) in data">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ parseInt(item.initial).toFixed(2) }}</td>
+                    <td>{{ parseInt(item.interest).toFixed(2) }}</td>
+                    <td>{{ parseInt(item.amount).toFixed(2) }}</td>
                 </tr>
                 </tbody>
+                <tfoot>
+                <tr>
+                    <td></td>
+                    <td>{{ parseInt(summary.total_amount).toFixed(2) }}</td>
+                    <td>{{ parseInt(summary.total_interest).toFixed(2) }}</td>
+                    <td>{{ parseInt(summary.total_contribution).toFixed(2) }}</td>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>
 </div>
+<footer class="my-5 pt-5 text-muted text-center text-small">
+    <p class="mb-1">© Todos los derechos reservados</p>
+</footer>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
 <script>
-    const app = new Vue({
+    let app = new Vue({
         el: '#app',
         data: {
             amount_initial: 1000,
             amount_regular: 100,
             interest: 10,
-            years: 1,
+            years: 2,
             period: 1,
             periods: [
-                { text: 'Mensual', value: 1 },
-                { text: 'Trimestral', value: 3 },
-                { text: 'Anual', value: 12 }
+                { text: 'Mensual', value: 12 },
+                { text: 'Trimestral', value: 4 },
+                { text: 'Cuatrimestral', value: 3 },
+                { text: 'Bimestral', value: 2 },
+                { text: 'Anual', value: 1 }
             ],
             compound: 360,
             compounds: [
                 { text: 'Diario', value: 1 },
                 { text: 'Mensual', value: 30 },
                 { text: 'Anual', value: 360 }
-            ]
+            ],
+            data: [],
+            summary: {},
+            chartDataLabel: [],
+            chartDataAmount: [],
         },
         computed: {
-            calculatePeriods: function () {
-                return 12 / this.period;
+            // Calcular total de aportes durante los años requeridos
+            calculateTotalPeriods: function () {
+                return this.period * parseInt(this.years);
             },
-            calculateAmountRegular: function () {
-                return (this.calculatePeriods * this.amount_regular) * this.years;
+            // Primer aporte + monto inicial
+            calculateFirstInvestment: function () {
+                return  parseInt(this.amount_initial) + parseInt(this.amount_regular);
+            },
+        },
+        methods: {
+            firstStep: function () {
+                let i;
+                let amount = 0;
+                let contributions = 0;
+                let calculate_interest = 0;
+                let initial_amount = this.calculateFirstInvestment;
+
+                let information = [];
+                let sum_contribution = 0;
+                let sum_interest = 0;
+                let sum_amount = 0;
+                let sum_amount_regular = 0;
+                let chart_labels = [];
+                let chart_amounts = [];
+
+                for (i = 0; i < this.calculateTotalPeriods; i++) {
+                    amount = initial_amount * Math.pow((1 + (parseInt(this.interest) / 100)), 1);
+                    contributions = contributions + parseInt(this.amount_regular);
+                    calculate_interest = amount - contributions - parseInt(this.amount_initial);
+                    initial_amount = amount;
+
+                    information.push({
+                        interest: calculate_interest,
+                        amount: amount,
+                        initial: initial_amount - calculate_interest
+                    });
+
+                    chart_labels.push(amount);
+                    chart_amounts.push(calculate_interest);
+
+                    sum_contribution = sum_amount + amount;
+                    sum_interest = sum_interest + calculate_interest;
+                    sum_amount = sum_amount + (initial_amount - calculate_interest);
+                    sum_amount_regular = sum_amount_regular + parseInt(this.amount_regular);
+
+                }
+
+                this.data = information;
+                this.summary = {
+                    'total_contribution': sum_contribution,
+                    'total_interest': sum_interest,
+                    'total_amount':  sum_amount,
+                    'total_amount_regular':  sum_amount_regular,
+                };
+
+                let ctx = document.getElementById('myChart').getContext('2d');
+                let myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Interés', 'Aporte regular', 'Inversión inicial'],
+                        datasets: [{
+                            label: '# of Votes',
+                            data: [sum_interest, sum_amount_regular, parseInt(this.amount_initial)],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+
             }
         }
     })
