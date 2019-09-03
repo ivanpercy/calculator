@@ -13,9 +13,6 @@
           crossorigin="anonymous">
 
     <style>
-        body {
-            /*font-size: 12px;*/
-        }
         .bd-placeholder-img {
             font-size: 1.125rem;
             text-anchor: middle;
@@ -28,7 +25,7 @@
         .form1{
             width:18px;
             height:18px;
-            background:rgba(255, 99, 132, 0.2);
+            background:#FFFFFF;
             font-family:arial;
             font-weight:bold;
             color:#EEEEEE;
@@ -36,7 +33,7 @@
         .form2{
             width:18px;
             height:18px;
-            background:rgba(54, 162, 235, 0.2);
+            background:#328CCA;
             font-family:arial;
             font-weight:bold;
             color:#EEEEEE;
@@ -44,15 +41,19 @@
         .form3{
             width:18px;
             height:18px;
-            background:rgba(255, 206, 86, 0.2);
+            background:#41C7C8;
             font-family:arial;
             font-weight:bold;
             color:#EEEEEE;
         }
-
+        .bg-dark {
+            background-color: #01002A !important;
+            color: #FFFFFF;
+            font-size: 12px;
+        }
     </style>
 </head>
-<body class="bg-light">
+<body class="bg-dark">
 <div class="container" id="app">
     <div class="py-5 text-center">
         <img class="d-block mx-auto mb-4"
@@ -64,8 +65,8 @@
         </p>
     </div>
     <div class="row">
-        <div class="col-md-12">
-            <div class="row" style="margin-bottom: 30px">
+        <div class="col-md-5">
+            <div class="row" >
                 <div class="col-md-4 mb-3">
                     <label>Monto Inicial</label>
                     <div class="input-group">
@@ -118,50 +119,53 @@
                 Calcular intereses
             </button>
         </div>
+        <div class="col-md-7">
+            <div class="row">
+                <div class="col-md-4">
+                    <div id="chartContainerPie" style="height: 200px; width: 100%;"></div>
+                </div>
+                <div class="col-md-8">
+                    <table class="table small" v-show="showInformation">
+                        <thead  class="thead-light">
+                        <tr>
+                            <th colspan="3" style="font-weight: bold">
+                                Después de {{ years }} año(s), su inversión tendrá un valor de
+                                S/ {{ parseFloat(summary.total).toFixed(2) }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tr>
+                            <td colspan="3">
+                                Esto se compone de:
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40px"><div class="form3"></div></td>
+                            <td style="width: 200px">Inversión inicial</td>
+                            <td>S/ {{ parseFloat(summary.contribution_initial).toFixed(2) }}</td>
+                        </tr>
+                        <tr>
+                            <td><div class="form2"></div></td>
+                            <td>Aporte regular</td>
+                            <td>S/ {{ parseFloat(summary.contribution_regular_total).toFixed(2) }}</td>
+                        </tr>
+                        <tr>
+                            <td><div class="form1"></div></td>
+                            <td>Interés ganado</td>
+                            <td>S/ {{ parseFloat(summary.interest_total).toFixed(2) }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="chartContainerBar" style="height: 300px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
     </div>
     <hr class="mb-4">
-    <div class="row" v-show="showInformation">
-        <div class="col-md-4">
-            <div id="chartContainerPie" style="height: 300px; width: 100%;"></div>
-        </div>
-        <div class="col-md-8">
-            <table class="table small">
-                <thead  class="thead-light">
-                <tr>
-                    <th colspan="3" style="font-weight: bold">
-                        Después de {{ years }} año(s), su inversión tendrá un valor de
-                        S/ {{ parseFloat(summary.total).toFixed(2) }}
-                    </th>
-                </tr>
-                </thead>
-                <tr>
-                    <td colspan="3">
-                        Esto se compone de:
-                    </td>
-                </tr>
-                <tr>
-                    <td style="width: 40px"><div class="form3"></div></td>
-                    <td style="width: 200px">Inversión inicial</td>
-                    <td>S/ {{ parseFloat(summary.contribution_initial).toFixed(2) }}</td>
-                </tr>
-                <tr>
-                    <td><div class="form2"></div></td>
-                    <td>Aporte regular</td>
-                    <td>S/ {{ parseFloat(summary.contribution_regular_total).toFixed(2) }}</td>
-                </tr>
-                <tr>
-                    <td><div class="form1"></div></td>
-                    <td>Interés ganado</td>
-                    <td>S/ {{ parseFloat(summary.interest_total).toFixed(2) }}</td>
-                </tr>
-            </table>
-        </div>
-    </div>
-    <div class="row" v-show="showInformation">
-        <div class="col-md-12">
-            <div id="chartContainerBar" style="height: 300px; width: 100%;"></div>
-        </div>
-    </div>
+
 </div>
 <footer class="my-5 pt-5 text-muted text-center text-small">
     <p class="mb-1">© Todos los derechos reservados</p>
@@ -235,9 +239,9 @@
                 }
 
                 information_for_chart_pie = [
-                    { y: this.amount_initial, label: 'Inversión inicial' },
-                    { y: contribution_regular_total, label: 'Aporte regular' },
-                    { y: summary_interest, label: 'Interés total' },
+                    { y: this.amount_initial, label: parseFloat(this.amount_initial).toFixed(2) },
+                    { y: contribution_regular_total, label:  parseFloat(contribution_regular_total).toFixed(2) },
+                    { y: summary_interest, label: parseFloat(summary_interest).toFixed(2) },
                 ];
 
                 this.summary = {
@@ -248,15 +252,24 @@
                 };
 
                 var chartBar = new CanvasJS.Chart("chartContainerBar", {
+                    backgroundColor: "transparent",
                     animationEnabled: true,
+                    dataPointMaxWidth: 40,
                     axisX: {
                         interval: 1,
-                        intervalType: "year"
+                        intervalType: "year",
+                        labelFontColor: "#FFFFFF",
+                        gridThickness: 0,
+                        tickLength: 5,
+                        lineThickness: 0,
                     },
                     axisY:{
-                        valueFormatString:"S/ #0",
-                        gridColor: "#B6B1A8",
-                        tickColor: "#B6B1A8"
+                        gridThickness: 0,
+                        tickLength: 0,
+                        lineThickness: 0,
+                        labelFormatter: function() {
+                            return " ";
+                        }
                     },
                     toolTip: {
                         shared: true,
@@ -265,23 +278,23 @@
                     data: [
                         {
                             type: "stackedColumn",
-                            showInLegend: true,
-                            color: "#FFFFFF",
+                            showInLegend: false,
+                            color: "#41C7C8",
                             name: "Capital inicial",
                             dataPoints: information_for_chart_bar_capital
                         },
                         {
                             type: "stackedColumn",
-                            showInLegend: true,
+                            showInLegend: false,
                             name: "Aporte periódico",
-                            color: "#39C7C9",
+                            color: "#328CCA",
                             dataPoints: information_for_chart_bar_contribution
                         },
                         {
                             type: "stackedColumn",
-                            showInLegend: true,
+                            showInLegend: false,
                             name: "Rentabilidad esperada",
-                            color: "#2F8EC8",
+                            color: "#FFFFFF",
                             dataPoints: information_for_chart_bar_interest
                         }
                     ]
@@ -304,17 +317,23 @@
                     return (str2.concat(str)).concat(str3);
                 }
 
+                CanvasJS.addColorSet("requiredColors", [
+                    "#41C7C8",
+                    "#328CCA",
+                    "#FFFFFF",
+                ]);
+
                 var chartPie = new CanvasJS.Chart("chartContainerPie", {
-                    theme: "light1", // "light1", "light2", "dark1", "dark2"
+                    backgroundColor: "transparent",
+                    colorSet: "requiredColors",
                     animationEnabled: true,
                     data: [{
+                        indexLabelPlacement: "inside",
+                        indexLabelFontSize: 10,
+                        indexLabelFontColor: "black",
                         type: "pie",
                         startAngle: 25,
-                        toolTipContent: "<b>{label}</b>: S/ {y}",
-                        showInLegend: "true",
-                        legendText: "{label}",
-                        indexLabelFontSize: 16,
-                        indexLabel: "{label} S/ {y}",
+                        toolTipContent: "S/ {y}",
                         dataPoints: information_for_chart_pie
                     }]
                 });
