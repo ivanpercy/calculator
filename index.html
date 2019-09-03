@@ -68,9 +68,6 @@
 <body class="bg-dark">
 <div class="container" id="app">
     <div class="py-5 text-center">
-        <img class="d-block mx-auto mb-4"
-             src="https://getbootstrap.com/docs/4.3/assets/brand/bootstrap-solid.svg"
-             alt="" width="72" height="72">
         <h2>Calculadora de Interés</h2>
         <p class="lead">
             Ingrese los datos para emular los intereses generados.
@@ -79,6 +76,17 @@
     <div class="row">
         <div class="col-md-5">
             <div class="row" >
+                <div class="col-md-12" style="font-weight: bold">
+                    <label style="margin-right: 50px;">
+                        <input type="radio" name="grad" value="yes" />&nbsp;&nbsp;DÓLARES
+                    </label>
+                    <label>
+                        <input type="radio" name="grad" value="not" />&nbsp;&nbsp;SOLES
+                    </label>
+                </div>
+
+
+
                 <div class="col-md-4 mb-3">
                     <label>Monto Inicial</label>
                     <div class="input-group">
@@ -119,7 +127,7 @@
                     </select>
                 </div>
             </div>
-            <button class="btn btn-primary btn-lg btn-block" type="button" @click="generateData()">
+            <button class="btn btn-success btn-lg btn-block" type="button" @click="generateData()">
                 Calcular intereses
             </button>
         </div>
