@@ -29,6 +29,7 @@
             font-family:arial;
             font-weight:bold;
             color:#EEEEEE;
+            border-radius: 50%;
         }
         .form2{
             width:18px;
@@ -37,6 +38,7 @@
             font-family:arial;
             font-weight:bold;
             color:#EEEEEE;
+            border-radius: 50%;
         }
         .form3{
             width:18px;
@@ -45,11 +47,15 @@
             font-family:arial;
             font-weight:bold;
             color:#EEEEEE;
+            border-radius: 50%;
         }
         .bg-dark {
             background-color: #01002A !important;
             color: #FFFFFF;
             font-size: 12px;
+        }
+        td {
+            padding: 5px;
         }
     </style>
 </head>
@@ -106,14 +112,6 @@
                         </option>
                     </select>
                 </div>
-                <!--<div class="col-md-4 mb-3">
-                    <label>Compuesto</label>
-                    <select class="custom-select d-block w-100" v-model="compound">
-                        <option v-for="option in compounds" :value="option.value">
-                            {{ option.text }}
-                        </option>
-                    </select>
-                </div>-->
             </div>
             <button class="btn btn-primary btn-lg btn-block" type="button" @click="generateData()">
                 Calcular intereses
@@ -121,24 +119,13 @@
         </div>
         <div class="col-md-7">
             <div class="row">
-                <div class="col-md-4">
-                    <div id="chartContainerPie" style="height: 200px; width: 100%;"></div>
-                </div>
-                <div class="col-md-8">
-                    <table class="table small" v-show="showInformation">
-                        <thead  class="thead-light">
-                        <tr>
-                            <th colspan="3" style="font-weight: bold">
-                                Después de {{ years }} año(s), su inversión tendrá un valor de
-                                S/ {{ parseFloat(summary.total).toFixed(2) }}
-                            </th>
-                        </tr>
-                        </thead>
-                        <tr>
-                            <td colspan="3">
-                                Esto se compone de:
-                            </td>
-                        </tr>
+                <div class="col-md-8"  v-show="showInformation">
+                    <h6>
+                        Después de {{ years }} año(s), tu inversión alcanzaría la suma de
+                        S/ {{ parseFloat(summary.total).toFixed(2) }}
+                    </h6>
+                    <p>Esto se compone de:</p>
+                    <table>
                         <tr>
                             <td style="width: 40px"><div class="form3"></div></td>
                             <td style="width: 200px">Inversión inicial</td>
@@ -156,10 +143,13 @@
                         </tr>
                     </table>
                 </div>
+                <div class="col-md-4">
+                    <div id="chartContainerPie" style="height: 200px; width: 100%;"></div>
+                </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-top: 50px">
                 <div class="col-md-12">
-                    <div id="chartContainerBar" style="height: 300px; width: 100%;"></div>
+                    <div id="chartContainerBar" style="height: 250px; width: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -182,10 +172,10 @@
         el: '#app',
         data: {
             showInformation: false,
-            amount_initial: 1000,
+            amount_initial: 10000,
             amount_regular: 100,
             interest: 10,
-            years: 5,
+            years: 10,
             period: 12,
             periods: [
                 { text: 'Mensual', value: 12 },
@@ -195,6 +185,9 @@
                 { text: 'Anual', value: 1 }
             ],
             summary: {}
+        },
+        mounted() {
+            this.generateData();
         },
         methods: {
             generateData: function () {
@@ -264,12 +257,11 @@
                         lineThickness: 0,
                     },
                     axisY:{
-                        gridThickness: 0,
-                        tickLength: 0,
-                        lineThickness: 0,
-                        labelFormatter: function() {
-                            return " ";
-                        }
+                        gridThickness: 1,
+                        tickLength: 10,
+                        lineThickness: 4,
+                        labelFontColor: "#FFFFFF",
+                        valueFormatString:"S/ #0",
                     },
                     toolTip: {
                         shared: true,
@@ -299,9 +291,7 @@
                         }
                     ]
                 });
-
                 chartBar.render();
-
                 function toolTipContent(e) {
                     var str = "";
                     var total = 0;
@@ -322,7 +312,6 @@
                     "#328CCA",
                     "#FFFFFF",
                 ]);
-
                 var chartPie = new CanvasJS.Chart("chartContainerPie", {
                     backgroundColor: "transparent",
                     colorSet: "requiredColors",
@@ -337,9 +326,7 @@
                         dataPoints: information_for_chart_pie
                     }]
                 });
-
                 chartPie.render();
-
             }
         }
     })
