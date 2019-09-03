@@ -63,6 +63,11 @@
         .col-md-7 {
             padding-left: 25px;
         }
+        .btn-personal {
+            height: 22px;
+            padding: 0px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body class="bg-dark">
@@ -75,58 +80,96 @@
     </div>
     <div class="row">
         <div class="col-md-5">
-            <div class="row" >
+            <div class="form-group row">
                 <div class="col-md-12" style="font-weight: bold">
                     <label style="margin-right: 50px;">
-                        <input type="radio" name="grad" value="yes" />&nbsp;&nbsp;DÓLARES
+                        <input type="radio" value="US" v-model="moneyRadio" />&nbsp;&nbsp;DÓLARES
                     </label>
                     <label>
-                        <input type="radio" name="grad" value="not" />&nbsp;&nbsp;SOLES
+                        <input type="radio" value="PE" v-model="moneyRadio" checked />&nbsp;&nbsp;SOLES
                     </label>
                 </div>
-
-
-
-                <div class="col-md-4 mb-3">
-                    <label>Monto Inicial</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">S/</span>
-                        </div>
-                        <input type="number" class="form-control" v-model="amount_initial">
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Inversión<br>Inicial</label>
+                <div class="input-group col-sm-8">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">{{ money }}</span>
                     </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>Interés Anual</label>
-                    <div class="input-group">
-                        <input type="number" class="form-control" v-model="interest">
-                        <div class="input-group-append">
-                            <span class="input-group-text">%</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>Años</label>
-                    <input type="number" class="form-control" v-model="years">
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>Monto de aporte</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">S/</span>
-                        </div>
-                        <input type="number" class="form-control" v-model="amount_regular">
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>Periodos de aporte</label>
-                    <select class="custom-select d-block w-100" v-model="period">
-                        <option v-for="option in periods" :value="option.value">
-                            {{ option.text }}
-                        </option>
-                    </select>
+                    <input type="number" class="form-control" style="height: 100%" v-model="amount_initial">
                 </div>
             </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">¿Cuánto puedo aportar periódicamente?</label>
+                <div class="input-group col-sm-5">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">{{ money }}</span>
+                    </div>
+                    <input type="number" class="form-control" style="height: 100%" v-model="amount_regular">
+                </div>
+                <div class="input-group col-sm-3">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <button class="btn form-control btn-personal" @click="changeYearToMonth()" :class="{ 'btn-success': btnPeriodMonth, 'btn-light': btnPeriodYear }">Mensual</button>
+                        </div>
+                        <div class="col-sm-12">
+                            <button class="btn form-control btn-personal" @click="changeMonthToYear()" :class="{ 'btn-success': btnPeriodYear, 'btn-light': btnPeriodMonth }">Anual</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Rentabilidad anual esperada</label>
+                <div class="input-group col-sm-8">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label style="margin-right: 50px;">
+                                <input type="radio" v-model="byProfitability" value="RIE" />&nbsp;&nbsp;Por perfil de riesgo
+                            </label>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-4" style="padding-right: 2px">
+                                    <button class="btn btn-success form-control btn-personal" :disabled="profitabilityButtons" @click="changeInterestTo(8)">Conservador</button>
+                                </div>
+                                <div class="col-sm-4" style="padding-right:2px; padding-left: 2px">
+                                    <button class="btn btn-warning form-control btn-personal" :disabled="profitabilityButtons" @click="changeInterestTo(12)">Moderado</button>
+                                </div>
+                                <div class="col-sm-4"  style="padding-left: 2px">
+                                    <button class="btn btn-danger form-control btn-personal" :disabled="profitabilityButtons" @click="changeInterestTo(16)">Arriesgado</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12" style="margin-top: 10px">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>
+                                        <input type="radio" v-model="byProfitability" value="REN" />&nbsp;&nbsp;Por rentabilidad esperada
+                                    </label>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" v-model="interest" :readonly="!profitabilityButtons">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Tiempo de <br>Inversión</label>
+                <div class="input-group col-sm-8">
+                    <input type="number" class="form-control" style="height: 100%" v-model="years">
+                    <div class="input-group-append">
+                        <span class="input-group-text">Años</span>
+                    </div>
+                </div>
+            </div>
+            <hr class="mb-4">
             <button class="btn btn-success btn-lg btn-block" type="button" @click="generateData()">
                 Calcular intereses
             </button>
@@ -136,24 +179,24 @@
                 <div class="col-md-8"  v-show="showInformation">
                     <h6>
                         Después de {{ years }} año(s), tu inversión alcanzaría la suma de
-                        S/ {{ parseFloat(summary.total).toFixed(2) }}
+                        {{ money }} {{ parseFloat(summary.total).toFixed(2) }}
                     </h6>
                     <p>Esto se compone de:</p>
                     <table>
                         <tr>
                             <td style="width: 40px"><div class="form3"></div></td>
                             <td style="width: 200px">Inversión inicial</td>
-                            <td>S/ {{ parseFloat(summary.contribution_initial).toFixed(2) }}</td>
+                            <td>{{ money }} {{ parseFloat(summary.contribution_initial).toFixed(2) }}</td>
                         </tr>
                         <tr>
                             <td><div class="form2"></div></td>
                             <td>Aporte regular</td>
-                            <td>S/ {{ parseFloat(summary.contribution_regular_total).toFixed(2) }}</td>
+                            <td>{{ money }} {{ parseFloat(summary.contribution_regular_total).toFixed(2) }}</td>
                         </tr>
                         <tr>
                             <td><div class="form1"></div></td>
                             <td>Interés ganado</td>
-                            <td>S/ {{ parseFloat(summary.interest_total).toFixed(2) }}</td>
+                            <td>{{ money }} {{ parseFloat(summary.interest_total).toFixed(2) }}</td>
                         </tr>
                     </table>
                 </div>
@@ -183,25 +226,47 @@
     let app = new Vue({
         el: '#app',
         data: {
+            moneyRadio: 'PE',
+            byProfitability: 'REN',
+            btnPeriodMonth: true,
+            btnPeriodYear: false,
             showInformation: false,
             amount_initial: 10000,
             amount_regular: 100,
-            interest: 10,
+            interest: 8,
             years: 10,
             period: 12,
-            periods: [
-                { text: 'Mensual', value: 12 },
-                { text: 'Trimestral', value: 4 },
-                { text: 'Cuatrimestral', value: 3 },
-                { text: 'Bimestral', value: 2 },
-                { text: 'Anual', value: 1 }
-            ],
             summary: {}
         },
         mounted() {
             this.generateData();
         },
+        computed: {
+            money: function () {
+                return this.moneyRadio === 'PE' ? 'S/' : '$';
+            },
+            profitabilityButtons: function () {
+                if (this.byProfitability === 'REN') {
+                    return true;
+                }
+                this.interest = 8;
+                return false;
+            }
+        },
         methods: {
+            changeInterestTo: function (int) {
+                this.interest = int;
+            },
+            changeMonthToYear: function () {
+                this.period = 1;
+                this.btnPeriodMonth = false;
+                this.btnPeriodYear = true;
+            },
+            changeYearToMonth: function () {
+                this.period = 12;
+                this.btnPeriodMonth = true;
+                this.btnPeriodYear = false;
+            },
             generateData: function () {
                 // Visualizar resumen
                 this.showInformation = true;
@@ -273,7 +338,7 @@
                         tickLength: 10,
                         lineThickness: 4,
                         labelFontColor: "#FFFFFF",
-                        valueFormatString:"S/ #0",
+                        //valueFormatString: this.money + "#0",
                     },
                     toolTip: {
                         shared: true,
@@ -309,13 +374,13 @@
                     var total = 0;
                     var str2, str3;
                     for (var i = 0; i < e.entries.length; i++){
-                        var  str1 = "<span style= \"color:"+e.entries[i].dataSeries.color + "\"> "+e.entries[i].dataSeries.name+"</span>: S/ <strong>"+e.entries[i].dataPoint.y+"</strong><br/>";
+                        var  str1 = "<span style= \"color:"+e.entries[i].dataSeries.color + "\"> "+e.entries[i].dataSeries.name+"</span>: <strong>"+e.entries[i].dataPoint.y+"</strong><br/>";
                         total = e.entries[i].dataPoint.y + total;
                         str = str.concat(str1);
                     }
                     str2 = "<span style = \"color:DodgerBlue;\"><strong>"+(e.entries[0].dataPoint.x).getFullYear()+"</strong></span><br/>";
                     total = Math.round(total * 100) / 100;
-                    str3 = "<span style = \"color:Tomato\">Total:</span><strong>S/ "+total+"</strong><br/>";
+                    str3 = "<span style = \"color:Tomato\">Total:</span><strong>"+total+"</strong><br/>";
                     return (str2.concat(str)).concat(str3);
                 }
 
@@ -334,7 +399,7 @@
                         indexLabelFontColor: "black",
                         type: "pie",
                         startAngle: 25,
-                        toolTipContent: "S/ {y}",
+                        //toolTipContent: this.money + "{y}",
                         dataPoints: information_for_chart_pie
                     }]
                 });
